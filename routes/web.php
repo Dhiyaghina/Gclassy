@@ -3,23 +3,36 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\TeacherController;
+use App\Http\Controllers\Teacher\DashboardController as TeacherDashboardController;
+use App\Http\Controllers\Teacher\ClassController as TeacherClassController;
 use App\Http\Controllers\Admin\StudentController;
 use App\Http\Controllers\Admin\ClassRoomController;
 use App\Http\Controllers\Admin\PaymentController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    // Check if user is logged in and is admin
-    if (auth()->check() && auth()->user()->isAdmin()) {
-        return redirect()->route('admin.dashboard');
+      if (auth()->check()) {
+        $user = auth()->user();
+        if ($user->isAdmin()) {
+            return redirect()->route('admin.dashboard');
+        } elseif ($user->isTeacher()) {
+            return redirect()->route('teacher.dashboard');
+        } elseif ($user->isStudent()) {
+            return redirect()->route('dashboard'); 
+        }
     }
     return view('welcome');
 });
 
 Route::get('/dashboard', function () {
     // Check if user is admin and redirect to admin dashboard
-    if (auth()->check() && auth()->user()->isAdmin()) {
-        return redirect()->route('admin.dashboard');
+    if (auth()->check()) {
+        $user = auth()->user();
+        if ($user->isAdmin()) {
+            return redirect()->route('admin.dashboard');
+        } elseif ($user->isTeacher()) {
+            return redirect()->route('teacher.dashboard');
+        }
     }
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
@@ -70,4 +83,10 @@ Route::middleware('auth')->group(function () {
     });
 });
 
+//punya guru
+Route::prefix('teacher')->middleware(['auth', 'teacher'])->name('teacher.')->group(function () {
+    Route::get('/', [TeacherDashboardController::class, 'index'])->name('dashboard');
+    Route::get('/classes', [TeacherClassController::class, 'index'])->name('classes.index');
+    Route::get('/classes/{classRoom}', [TeacherClassController::class, 'show'])->name('classes.show');
+});
 require __DIR__.'/auth.php';

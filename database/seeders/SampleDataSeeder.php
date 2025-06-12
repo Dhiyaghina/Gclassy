@@ -21,7 +21,7 @@ class SampleDataSeeder extends Seeder
         $teachers = [
             [
                 'name' => 'Dr. Sarah Johnson',
-                'email' => 'sarah.johnson@ -admin.com',
+                'email' => 'sarah.johnson@teacher.com',
                 'phone' => '081234567890',
                 'employee_id' => 'EMP001',
                 'subject' => 'Mathematics',
@@ -30,7 +30,7 @@ class SampleDataSeeder extends Seeder
             ],
             [
                 'name' => 'Prof. Michael Chen',
-                'email' => 'michael.chen@ -admin.com',
+                'email' => 'michael.chen@teacher.com',
                 'phone' => '081234567891',
                 'employee_id' => 'EMP002',
                 'subject' => 'Physics',
@@ -39,7 +39,7 @@ class SampleDataSeeder extends Seeder
             ],
             [
                 'name' => 'Mrs. Lisa Anderson',
-                'email' => 'lisa.anderson@ -admin.com',
+                'email' => 'lisa.anderson@teacher.com',
                 'phone' => '081234567892',
                 'employee_id' => 'EMP003',
                 'subject' => 'English',
@@ -48,7 +48,7 @@ class SampleDataSeeder extends Seeder
             ],
             [
                 'name' => 'Mr. David Rodriguez',
-                'email' => 'david.rodriguez@ -admin.com',
+                'email' => 'david.rodriguez@teacher.com',
                 'phone' => '081234567893',
                 'employee_id' => 'EMP004',
                 'subject' => 'Chemistry',
