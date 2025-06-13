@@ -9,6 +9,8 @@ use App\Http\Controllers\Admin\StudentController;
 use App\Http\Controllers\Admin\ClassRoomController;
 use App\Http\Controllers\Admin\PaymentController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ForumController;
+use App\Http\Controllers\CommentController;
 
 Route::get('/', function () {
       if (auth()->check()) {
@@ -64,6 +66,13 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->name('admin.')->group(fun
 });
 
 Route::middleware('auth')->group(function () {
+    Route::post('/classrooms/{classRoom}/forum', [ForumController::class, 'store'])->name('forum.store');
+    Route::delete('/forum/{forum}', [ForumController::class, 'destroy'])->name('forum.destroy');
+    
+    // Routes untuk comments
+    Route::post('/forum/{forum}/comments', [CommentController::class, 'store'])->name('comments.store');
+    Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
+
     Route::get('/profile', function() {
         // If admin tries to access profile, redirect to admin dashboard
         if (auth()->user()->isAdmin()) {
@@ -88,5 +97,6 @@ Route::prefix('teacher')->middleware(['auth', 'teacher'])->name('teacher.')->gro
     Route::get('/', [TeacherDashboardController::class, 'index'])->name('dashboard');
     Route::get('/classes', [TeacherClassController::class, 'index'])->name('classes.index');
     Route::get('/classes/{classRoom}', [TeacherClassController::class, 'show'])->name('classes.show');
+    Route::get('/classes/{classRoom}/orang', [TeacherClassController::class, 'orang'])->name('classes.orang');
 });
 require __DIR__.'/auth.php';

@@ -112,14 +112,6 @@
                                 </span>
                             </div>
                             <p class="mt-1 text-sm text-gray-500">{{ $class->subject }}</p>
-                            <div class="mt-3 flex items-center justify-between text-sm text-gray-500">
-                                <span>{{ $class->students->count() }} siswa</span>
-                                @if($class->type === 'bimbel')
-                                    <span>Rp {{ number_format($class->price, 0, ',', '.') }}</span>
-                                @else
-                                    <span>Gratis</span>
-                                @endif
-                            </div>
                             <div class="mt-3">
                                 <a href="{{ route('teacher.classes.show', $class) }}" 
                                    class="text-sm text-blue-600 hover:text-blue-900">

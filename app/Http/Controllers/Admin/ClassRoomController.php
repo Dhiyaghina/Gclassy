@@ -78,6 +78,10 @@ class ClassRoomController extends Controller
         $availableStudents = Student::whereDoesntHave('classRooms', function($query) use ($classRoom) {
             $query->where('class_student.class_room_id', $classRoom->id);
         })->with('user')->get();
+
+         $classRoom->load(['posts.user', 'posts.comments.user']);
+    
+    return view('teacher.classrooms.show', compact('classRoom'));
         
         return view('admin.classrooms.show', compact('classRoom', 'availableStudents'));
     }

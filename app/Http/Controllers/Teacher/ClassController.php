@@ -25,6 +25,7 @@ class ClassController extends Controller
 
         return view('teacher.classes.index', compact('classes'));
     }
+    
 
     public function show(ClassRoom $classRoom)
     {
@@ -41,4 +42,20 @@ class ClassController extends Controller
 
         return view('teacher.classes.show', compact('classRoom'));
     }
+    public function orang(ClassRoom $classRoom)
+    {
+        $teacher = auth()->user()->teacher;
+        
+        // Pastikan kelas ini milik guru yang sedang login
+        if ($classRoom->teacher_id !== $teacher->id) {
+            abort(403, 'Anda tidak memiliki akses ke kelas ini.');
+        }
+
+        // Load data yang dibutuhkan untuk halaman 'orang'
+        $classRoom->load(['students.user']); // Menampilkan data siswa yang terhubung dengan kelas
+
+        // Kembalikan tampilan untuk halaman 'Orang'
+        return view('teacher.classes.orang', compact('classRoom'));
+    }
+
 }

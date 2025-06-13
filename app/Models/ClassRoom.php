@@ -85,4 +85,8 @@ class ClassRoom extends Model
     {
         return $this->type === 'reguler';
     }
+     public function forum()
+    {
+        return $this->hasMany(forum::class)->orderBy('created_at', 'desc');
+    }
 }
