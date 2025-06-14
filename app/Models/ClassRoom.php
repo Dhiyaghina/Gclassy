@@ -89,4 +89,11 @@ class ClassRoom extends Model
     {
         return $this->hasMany(forum::class)->orderBy('created_at', 'desc');
     }
+
+
+    public function tasks()
+    {
+        return $this->hasMany(Task::class);
+    }
+
 }

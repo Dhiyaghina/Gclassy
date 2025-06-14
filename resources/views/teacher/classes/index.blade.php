@@ -1,107 +1,128 @@
 @extends('teacher.layout')
 
-@section('title', 'Kelas Saya')
-
-@section('header')
-    <h1 class="text-3xl font-bold leading-tight text-gray-900">Kelas Saya</h1>
-    <p class="mt-2 text-sm text-gray-600">Kelola kelas yang Anda ajar</p>
-@endsection
+@section('title', 'Tugas Kelas - ' . $classRoom->name)
 
 @section('content')
-<div class="bg-white shadow rounded-lg">
-    <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
-        <div class="flex items-center justify-between">
-            <div>
-                <h3 class="text-lg leading-6 font-medium text-gray-900">Daftar Kelas</h3>
-                <p class="mt-1 max-w-2xl text-sm text-gray-500">
-                    Total {{ $classes->count() }} kelas yang Anda ampu
-                </p>
+<div class="grid grid-cols-3 lg:grid-cols-3 gap-6">
+    <div class="lg:col-span-1">
+        <!-- Informasi Kelas -->
+        <h3 class="text-lg font-medium">Informasi Kelas</h3>
+        <div class="bg-white shadow rounded-lg mb-6">
+            <div class="px-4 py-5 sm:p-6 border-b border-gray-200">
+                <h4 class="text-sm font-medium text-gray-900">{{ $classRoom->name }}</h4>
+                <p class="text-xs text-gray-500">{{ $classRoom->subject }}</p>
             </div>
         </div>
     </div>
 
-    @if($classes->count() > 0)
-        <div class="overflow-hidden">
-            <table class="min-w-full divide-y divide-gray-200">
-                <thead class="bg-gray-50">
-                    <tr>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Kelas
-                        </th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Mata Pelajaran
-                        </th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Tipe
-                        </th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Siswa
-                        </th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Jadwal
-                        </th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Harga
-                        </th>
-                        <th scope="col" class="relative px-6 py-3">
-                            <span class="sr-only">Aksi</span>
-                        </th>
-                    </tr>
-                </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
-                    @foreach($classes as $class)
-                        <tr class="hover:bg-gray-50">
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="flex items-center">
-                                    <div>
-                                        <div class="text-sm font-medium text-gray-900">{{ $class->name }}</div>
-                                        @if($class->description)
-                                            <div class="text-sm text-gray-500">{{ Str::limit($class->description, 50) }}</div>
-                                        @endif
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                {{ $class->subject }}
-                            </td>                            <td class="px-6 py-4 whitespace-nowrap">
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $class->type === 'reguler' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800' }}">
-                                    {{ ucfirst($class->type) }}
-                                </span>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                                    {{ $class->students_count }} siswa
-                                </span>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                {{ $class->schedule ?? '-' }}
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                @if($class->type === 'bimbel')
-                                    Rp {{ number_format($class->price, 0, ',', '.') }}
-                                @else
-                                    <span class="text-green-600 font-medium">Gratis</span>
-                                @endif
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                <a href="{{ route('teacher.classes.show', $class) }}" 
-                                   class="text-blue-600 hover:text-blue-900">
-                                    Detail
-                                </a>
-                            </td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
+    <div class="lg:col-span-2">
+        <!-- Form untuk membuat materi baru -->
+        <button class="bg-green-600 text-white px-4 py-2 rounded-md" id="createTaskBtn">Buat Materi</button>
+
+        <!-- Daftar Materi -->
+        @foreach($classRoom->tasks as $task)
+        <div class="bg-white shadow rounded-lg mb-6">
+            <div class="px-4 py-5 sm:p-6">
+                <h4 class="text-sm font-medium text-gray-900">{{ $task->title }}</h4>
+                <p class="text-xs text-gray-500">{{ $task->created_at->diffForHumans() }}</p>
+                <p class="mt-2 text-sm text-gray-900">{{ $task->content }}</p>
+                @if($task->attachment)
+                    <a href="{{ asset('storage/' . $task->attachment) }}" target="_blank" class="text-blue-600">Lihat Lampiran</a>
+                @endif
+
+                <!-- Tombol Edit dan Hapus -->
+                <button class="bg-yellow-500 text-white px-3 py-1 rounded-md" onclick="editTask({{ $task->id }})">Edit</button>
+                <button class="bg-red-600 text-white px-3 py-1 rounded-md" onclick="deleteTask({{ $task->id }})">Hapus</button>
+            </div>
         </div>
-    @else
-        <div class="text-center py-12">
-            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-            </svg>
-            <h3 class="mt-2 text-sm font-medium text-gray-900">Belum ada kelas</h3>
-            <p class="mt-1 text-sm text-gray-500">Anda belum ditugaskan ke kelas manapun saat ini.</p>
-        </div>
-    @endif
+        @endforeach
+    </div>
 </div>
+
+<!-- Modal untuk Create / Edit -->
+<div id="taskModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center">
+    <div class="bg-white p-6 rounded-lg shadow-lg w-1/2">
+        <h3 class="text-lg font-medium mb-4" id="modalTitle">Buat Materi Baru</h3>
+        <form id="taskForm" action="{{ route('tasks.store', $classRoom->id) }}" method="POST" enctype="multipart/form-data">
+            @csrf
+            <input type="hidden" name="taskId" id="taskId">
+            <div class="mb-4">
+                <label for="title" class="block text-sm font-medium text-gray-700">Judul Materi</label>
+                <input type="text" name="title" id="title" class="w-full px-3 py-2 border border-gray-300 rounded-md" required>
+            </div>
+            <div class="mb-4">
+                <label for="content" class="block text-sm font-medium text-gray-700">Konten Materi</label>
+                <textarea name="content" id="content" rows="4" class="w-full px-3 py-2 border border-gray-300 rounded-md" required></textarea>
+            </div>
+            <div class="mb-4">
+                <label for="attachment" class="block text-sm font-medium text-gray-700">Lampiran (Opsional)</label>
+                <input type="file" name="attachment" id="attachment" class="w-full px-3 py-2 border border-gray-300 rounded-md" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.gif">
+            </div>
+            <div class="flex justify-end">
+                <button type="submit" id="submitTaskBtn" class="bg-blue-600 text-white px-4 py-2 rounded-md">Simpan</button>
+            </div>
+        </form>
+        <button class="absolute top-2 right-2 text-gray-500" onclick="closeModal()">X</button>
+    </div>
+</div>
+
+@endsection
+
+@section('scripts')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+<script>
+// Menampilkan modal untuk create
+document.getElementById('createTaskBtn').addEventListener('click', function() {
+    document.getElementById('taskModal').classList.remove('hidden');
+    document.getElementById('taskForm').action = "{{ route('tasks.store', $classRoom->id) }}";
+    document.getElementById('modalTitle').textContent = "Buat Materi Baru";
+    document.getElementById('taskId').value = ''; // Reset taskId
+    document.getElementById('submitTaskBtn').textContent = "Simpan";
+});
+
+// Menutup modal
+function closeModal() {
+    document.getElementById('taskModal').classList.add('hidden');
+}
+
+// Menampilkan modal untuk edit
+function editTask(taskId) {
+    fetch(`/tasks/${taskId}/edit`)
+    .then(response => response.json())
+    .then(data => {
+        document.getElementById('taskModal').classList.remove('hidden');
+        document.getElementById('taskForm').action = `/tasks/${taskId}`;
+        document.getElementById('modalTitle').textContent = "Edit Materi";
+        document.getElementById('title').value = data.title;
+        document.getElementById('content').value = data.content;
+        document.getElementById('taskId').value = taskId;
+        document.getElementById('submitTaskBtn').textContent = "Update";
+    });
+}
+
+// Menghapus materi
+function deleteTask(taskId) {
+    Swal.fire({
+        title: 'Yakin ingin menghapus materi ini?',
+        text: "Tindakan ini tidak bisa dibatalkan.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Hapus',
+        cancelButtonText: 'Batal'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            fetch(`/tasks/${taskId}`, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                },
+            }).then(response => response.json())
+              .then(data => {
+                  Swal.fire('Dihapus!', 'Materi berhasil dihapus.', 'success');
+                  location.reload();
+              });
+        }
+    });
+}
+</script>
 @endsection

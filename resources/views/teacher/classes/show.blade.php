@@ -9,7 +9,7 @@
             <p class="mt-2 text-sm text-gray-600">{{ $classRoom->subject }}</p>
             <div class="nav nav-pills nav-fill">
                <a class="nav-link active" aria-current="page" href="{{ route('teacher.classes.show', ['classRoom' => $classRoom->id]) }}">Forum</a>
-                <a class="nav-link" href="#">Tugas Kelas</a>
+                <a class="nav-link" href="{{ route('teacher.tasks.index', ['classRoom' => $classRoom->id]) }}">Tugas Kelas</a>
                 <a class="nav-link" href="{{ route('teacher.classes.orang', ['classRoom'=>$classRoom->id]) }}">Orang</a>
                 <a class="nav-link" href="#">Nilai</a>
             </div>

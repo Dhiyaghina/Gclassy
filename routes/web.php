@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\TeacherController;
 use App\Http\Controllers\Teacher\DashboardController as TeacherDashboardController;
 use App\Http\Controllers\Teacher\ClassController as TeacherClassController;
+use App\Http\Controllers\Teacher\TaskController;
 use App\Http\Controllers\Admin\StudentController;
 use App\Http\Controllers\Admin\ClassRoomController;
 use App\Http\Controllers\Admin\PaymentController;
@@ -98,5 +99,7 @@ Route::prefix('teacher')->middleware(['auth', 'teacher'])->name('teacher.')->gro
     Route::get('/classes', [TeacherClassController::class, 'index'])->name('classes.index');
     Route::get('/classes/{classRoom}', [TeacherClassController::class, 'show'])->name('classes.show');
     Route::get('/classes/{classRoom}/orang', [TeacherClassController::class, 'orang'])->name('classes.orang');
+    Route::resource('/classes/{classRoom}/tasks', TaskController::class)->names('tasks');
+    Route::put('/assignments/{assignment}/grade', [AssignmentController::class, 'grade'])->name('assignments.grade');
 });
 require __DIR__.'/auth.php';
