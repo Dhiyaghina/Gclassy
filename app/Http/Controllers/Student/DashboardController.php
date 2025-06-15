@@ -15,52 +15,71 @@ class DashboardController extends Controller
         $user = Auth::user();
         $student = $user->student; // Ambil profil student
 
-        // Dapatkan semua kelas yang tersedia
-        // Menggunakan with('teacher.user') untuk memuat relasi berlapis agar tidak N+1 query di view
-        $availableClassRooms = ClassRoom::with('teacher.user')->get();
+        // Dapatkan semua kelas yang tersedia dengan eager loading teacher dan user-nya
+        $allClassRooms = ClassRoom::with('teacher.user')->get();
 
         // Dapatkan kelas yang sudah diikuti student (melalui tabel pivot class_student)
         $enrolledClassRooms = $student->classRooms;
 
+        // Inisialisasi koleksi untuk kelas yang bisa diakses dan yang terkunci
+        $accessibleClassRooms = collect();
+        $lockedClassRooms = collect();
+
         // Buat array untuk menyimpan status akses setiap kelas
         $classAccessStatus = [];
-        foreach ($availableClassRooms as $classRoom) {
+
+        foreach ($allClassRooms as $classRoom) {
             $hasAccess = false;
             $paymentStatus = 'belum_bayar'; // Default status
 
-            // Cek apakah student sudah terdaftar di kelas ini
+            // Cek apakah student sudah terdaftar di kelas ini (via class_student pivot)
             if ($enrolledClassRooms->contains($classRoom->id)) {
-                $hasAccess = true; // Jika sudah terdaftar, berarti punya akses
-                $paymentStatus = 'terdaftar'; // Status lebih tepat untuk yang sudah terdaftar
+                $hasAccess = true;
+                $paymentStatus = 'terdaftar';
             } else {
                 // Jika belum terdaftar, cek apakah kelas membutuhkan pembayaran
-                if ($classRoom->isBimbel()) { // Asumsi kelas bimbel memerlukan pembayaran
-                    // Cek status pembayaran untuk kelas ini
-                    // Gunakan latest() pada query builder untuk mendapatkan pembayaran terbaru
+                if ($classRoom->isBimbel()) {
                     $payment = $student->payments()
                                      ->where('class_room_id', $classRoom->id)
-                                     ->latest() // Ini setara dengan orderByDesc('created_at')
+                                     ->latest()
                                      ->first();
 
                     if ($payment) {
                         $paymentStatus = $payment->status;
                         if ($payment->isApproved()) {
-                            $hasAccess = true; // Akses diberikan jika pembayaran disetujui
+                            $hasAccess = true;
+                            // Jika pembayaran disetujui tapi belum terdaftar di pivot, daftarkan sekarang
+                            // Ini memastikan siswa terdaftar di pivot table untuk kelas bimbel setelah pembayaran disetujui.
+                            $student->classRooms()->attach($classRoom->id);
+                            // Refresh collection enrolledClassRooms jika attach dilakukan agar konsisten dalam loop ini
+                            $enrolledClassRooms->push($classRoom);
                         }
                     }
                 } else {
                     // Kelas reguler tidak memerlukan pembayaran, langsung akses
                     $hasAccess = true;
                     $paymentStatus = 'tidak_perlu_bayar';
+                    // Untuk kelas reguler, jika student belum terdaftar di pivot, daftarkan
+                    if (!$enrolledClassRooms->contains($classRoom->id)) {
+                        $student->classRooms()->attach($classRoom->id);
+                        $enrolledClassRooms->push($classRoom); // Refresh collection
+                    }
                 }
             }
+
             $classAccessStatus[$classRoom->id] = [
                 'has_access' => $hasAccess,
                 'payment_status' => $paymentStatus,
             ];
+
+            if ($hasAccess) {
+                $accessibleClassRooms->push($classRoom);
+            } else {
+                $lockedClassRooms->push($classRoom);
+            }
         }
 
-        return view('student.dashboard', compact('availableClassRooms', 'enrolledClassRooms', 'classAccessStatus'));
+        return view('student.dashboard', compact('accessibleClassRooms', 'lockedClassRooms', 'classAccessStatus'));
     }
 
     public function showClassDetail(ClassRoom $classRoom)
