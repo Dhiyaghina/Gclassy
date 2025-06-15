@@ -14,33 +14,40 @@ use App\Http\Controllers\Admin\PaymentController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ForumController;
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\Student\DashboardController as StudentDashboardController;
+use App\Http\Controllers\Student\PaymentController as StudentPaymentController;
+use App\Http\Controllers\Student\EnrollmentController;
+use App\Http\Controllers\Student\AssignmentController as StudentAssignmentController; // Import the new controller
+use App\Http\Controllers\Teacher\AssignmentController; // Diperlukan jika route assignments.grade aktif
+
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register web routes for your application. These
+| routes are loaded by the RouteServiceProvider within a group which
+| contains the "web" middleware group. Now create something great!
+|
+*/
 
 Route::get('/', function () {
-      if (auth()->check()) {
-        $user = auth()->user();
-        if ($user->isAdmin()) {
-            return redirect()->route('admin.dashboard');
-        } elseif ($user->isTeacher()) {
-            return redirect()->route('teacher.dashboard');
-        } elseif ($user->isStudent()) {
-            return redirect()->route('dashboard'); 
-        }
-    }
-    return view('welcome');
-});
-
-Route::get('/dashboard', function () {
-    // Check if user is admin and redirect to admin dashboard
     if (auth()->check()) {
         $user = auth()->user();
         if ($user->isAdmin()) {
             return redirect()->route('admin.dashboard');
         } elseif ($user->isTeacher()) {
             return redirect()->route('teacher.dashboard');
+        } elseif ($user->isStudent()) {
+            return redirect()->route('dashboard');
         }
     }
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+    return view('welcome');
+});
+
+Route::get('/dashboard', [StudentDashboardController::class, 'index'])
+    ->middleware(['auth', 'verified'])
+    ->name('dashboard');
 
 // Admin Routes
 Route::prefix('admin')->middleware(['auth', 'admin'])->name('admin.')->group(function () {
@@ -76,8 +83,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/forum/{forum}/comments', [CommentController::class, 'store'])->name('comments.store');
     Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
 
+    // Profile route, dengan redirect untuk admin
     Route::get('/profile', function() {
-        // If admin tries to access profile, redirect to admin dashboard
         if (auth()->user()->isAdmin()) {
             return redirect()->route('admin.dashboard');
         }
@@ -87,15 +94,27 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     
-    // Student enrollment routes
-    Route::middleware(['auth'])->prefix('student')->name('student.')->group(function () {
-        Route::get('/enrollment', [App\Http\Controllers\Student\EnrollmentController::class, 'index'])->name('enrollment.index');
-        Route::post('/enrollment', [App\Http\Controllers\Student\EnrollmentController::class, 'store'])->name('enrollment.store');
-        Route::delete('/enrollment/{classRoom}', [App\Http\Controllers\Student\EnrollmentController::class, 'leave'])->name('enrollment.leave');
+    // Student specific routes (Enrollment, Class Detail, Payment, Assignment)
+    Route::prefix('student')->name('student.')->group(function () {
+        // Existing student enrollment routes
+        Route::get('/enrollment', [EnrollmentController::class, 'index'])->name('enrollment.index');
+        Route::post('/enrollment', [EnrollmentController::class, 'store'])->name('enrollment.store');
+        Route::delete('/enrollment/{classRoom}', [EnrollmentController::class, 'leave'])->name('enrollment.leave');
+
+        // Student class detail and payment routes
+        Route::get('/class/{classRoom}', [StudentDashboardController::class, 'showClassDetail'])->name('class.detail');
+        Route::get('/payment/{classRoom}', [StudentPaymentController::class, 'showPaymentForm'])->name('payment.form');
+        Route::post('/payment/{classRoom}', [StudentPaymentController::class, 'processPayment'])->name('payment.process');
+
+        // New student assignment routes
+        // Route untuk menampilkan form upload/edit tugas
+        Route::get('/tasks/{task}/assignment/upload', [StudentAssignmentController::class, 'create'])->name('assignments.create');
+        // Route untuk menyimpan/memperbarui tugas
+        Route::post('/tasks/{task}/assignment', [StudentAssignmentController::class, 'store'])->name('assignments.store');
     });
 });
 
-//punya guru
+// Teacher Routes
 Route::prefix('teacher')->middleware(['auth', 'teacher'])->name('teacher.')->group(function () {
     Route::get('/', [TeacherDashboardController::class, 'index'])->name('dashboard');
     Route::get('/classes', [TeacherClassController::class, 'index'])->name('classes.index');
@@ -114,4 +133,6 @@ Route::prefix('teacher')->middleware(['auth', 'teacher'])->name('teacher.')->gro
     // Grading submission
     Route::post('/submission/{submission}/grade', [TeacherAssignmentController::class, 'gradeSubmission'])->name('submissions.grade');
 });
+
+
 require __DIR__.'/auth.php';
