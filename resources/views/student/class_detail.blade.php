@@ -39,25 +39,49 @@
 
                     @if ($hasAccessToMaterials)
                         <hr class="my-6">
-                        <h4 class="text-xl font-semibold text-gray-800 mb-4">Materi Kursus</h4>
+                        <h4 class="text-xl font-semibold text-gray-800 mb-4">Materi Kursus & Tugas</h4>
                         @if ($tasks->isNotEmpty())
-                            <ul class="list-disc pl-5">
+                            <ul class="space-y-4">
                                 @foreach ($tasks as $task)
-                                    <li class="mb-2">
-                                        <a href="#" class="text-indigo-600 hover:text-indigo-800 font-medium">
-                                            {{ $task->title }}
-                                        </a>
-                                        <p class="text-sm text-gray-600 ml-4">{{ Str::limit($task->content, 100) }}</p>
+                                    <li class="bg-gray-50 p-4 rounded-lg shadow-sm border border-gray-200">
+                                        <div class="flex justify-between items-center mb-2">
+                                            <h5 class="text-lg font-bold text-gray-800">{{ $task->title }}</h5>
+                                            {{-- Cek apakah ada tugas yang sudah diunggah oleh siswa ini --}}
+                                            @php
+                                                // Karena sudah eager loaded dengan where student_id, assignments akan hanya berisi tugas siswa ini
+                                                $studentAssignment = $task->assignments->first();
+                                            @endphp
+
+                                            @if ($studentAssignment)
+                                                <div class="flex items-center space-x-2">
+                                                    <span class="text-sm font-semibold text-green-600">Telah Diunggah</span>
+                                                    @if ($studentAssignment->nilai !== null)
+                                                        <span class="text-sm font-bold text-indigo-700">Nilai: {{ $studentAssignment->nilai }}</span>
+                                                    @else
+                                                        <span class="text-sm text-gray-600">Menunggu Penilaian</span>
+                                                    @endif
+                                                    <a href="{{ route('student.assignments.create', $task) }}" class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md text-white bg-blue-500 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                                        Lihat/Ubah Tugas
+                                                    </a>
+                                                </div>
+                                            @else
+                                                <a href="{{ route('student.assignments.create', $task) }}" class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                                    Unggah Tugas
+                                                </a>
+                                            @endif
+                                        </div>
+                                        <p class="text-sm text-gray-600 mb-2">{{ $task->content }}</p>
                                         @if ($task->attachment)
-                                            <a href="{{ $task->getAttachmentUrl() }}" target="_blank" class="text-blue-500 hover:underline text-sm ml-4">
-                                                Unduh Lampiran
+                                            <a href="{{ $task->getAttachmentUrl() }}" target="_blank" class="text-blue-500 hover:underline text-sm flex items-center">
+                                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13.5"></path></svg>
+                                                Unduh Lampiran Tugas
                                             </a>
                                         @endif
                                     </li>
                                 @endforeach
                             </ul>
                         @else
-                            <p class="text-gray-600">Belum ada materi kursus untuk kelas ini.</p>
+                            <p class="text-gray-600">Belum ada materi atau tugas untuk kelas ini.</p>
                         @endif
                     @else
                         <hr class="my-6">
@@ -76,7 +100,7 @@
                                     <p class="mt-2">Status Pembayaran: <span class="font-semibold text-red-700">Ditolak</span></p>
                                     <p class="text-sm mt-1">Pembayaran Anda sebelumnya ditolak. Silakan lakukan pembayaran ulang dan upload bukti yang benar.</p>
                                     <a href="{{ route('student.payment.form', $classRoom) }}" class="mt-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                                        Upload Bukti Pembayaran
+                                        Lihat Detail & Bayar
                                     </a>
                                 @else {{-- Belum ada pembayaran atau status selain pending/rejected --}}
                                     <p class="mt-2">Untuk mengakses materi, Anda perlu melakukan pembayaran.</p>

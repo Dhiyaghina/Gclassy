@@ -14,7 +14,8 @@ use App\Http\Controllers\ForumController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\Student\DashboardController as StudentDashboardController;
 use App\Http\Controllers\Student\PaymentController as StudentPaymentController;
-use App\Http\Controllers\Student\EnrollmentController; // Pastikan ini diimpor jika digunakan di group student
+use App\Http\Controllers\Student\EnrollmentController;
+use App\Http\Controllers\Student\AssignmentController as StudentAssignmentController; // Import the new controller
 use App\Http\Controllers\Teacher\AssignmentController; // Diperlukan jika route assignments.grade aktif
 
 /*
@@ -36,19 +37,15 @@ Route::get('/', function () {
         } elseif ($user->isTeacher()) {
             return redirect()->route('teacher.dashboard');
         } elseif ($user->isStudent()) {
-            // Untuk student, redirect ke dashboard utama yang akan ditangani oleh StudentDashboardController
             return redirect()->route('dashboard');
         }
     }
     return view('welcome');
 });
 
-// Route Dashboard Global (untuk student)
-// Jika user adalah student, route ini akan menampilkan dashboard student
-// Admin dan Teacher akan diredirect oleh route '/' di atas
 Route::get('/dashboard', [StudentDashboardController::class, 'index'])
     ->middleware(['auth', 'verified'])
-    ->name('dashboard'); // Nama route ini tetap 'dashboard'
+    ->name('dashboard');
 
 // Admin Routes
 Route::prefix('admin')->middleware(['auth', 'admin'])->name('admin.')->group(function () {
@@ -95,21 +92,23 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     
-    // Student specific routes (Enrollment, Class Detail, Payment)
-    // NOTE: Anda dapat menambahkan middleware 'role:student' di sini untuk kontrol akses yang lebih ketat.
-    // Contoh: Route::prefix('student')->middleware(['role:student'])->name('student.')->group(function () { ... });
+    // Student specific routes (Enrollment, Class Detail, Payment, Assignment)
     Route::prefix('student')->name('student.')->group(function () {
         // Existing student enrollment routes
         Route::get('/enrollment', [EnrollmentController::class, 'index'])->name('enrollment.index');
         Route::post('/enrollment', [EnrollmentController::class, 'store'])->name('enrollment.store');
         Route::delete('/enrollment/{classRoom}', [EnrollmentController::class, 'leave'])->name('enrollment.leave');
 
-        // New student class detail and payment routes
-        // Menggunakan StudentDashboardController untuk showClassDetail
+        // Student class detail and payment routes
         Route::get('/class/{classRoom}', [StudentDashboardController::class, 'showClassDetail'])->name('class.detail');
-        // Menggunakan StudentPaymentController untuk form dan proses pembayaran
         Route::get('/payment/{classRoom}', [StudentPaymentController::class, 'showPaymentForm'])->name('payment.form');
         Route::post('/payment/{classRoom}', [StudentPaymentController::class, 'processPayment'])->name('payment.process');
+
+        // New student assignment routes
+        // Route untuk menampilkan form upload/edit tugas
+        Route::get('/tasks/{task}/assignment/upload', [StudentAssignmentController::class, 'create'])->name('assignments.create');
+        // Route untuk menyimpan/memperbarui tugas
+        Route::post('/tasks/{task}/assignment', [StudentAssignmentController::class, 'store'])->name('assignments.store');
     });
 });
 
@@ -120,7 +119,6 @@ Route::prefix('teacher')->middleware(['auth', 'teacher'])->name('teacher.')->gro
     Route::get('/classes/{classRoom}', [TeacherClassController::class, 'show'])->name('classes.show');
     Route::get('/classes/{classRoom}/orang', [TeacherClassController::class, 'orang'])->name('classes.orang');
     Route::resource('/classes/{classRoom}/tasks', TaskController::class)->names('tasks');
-    // Pastikan AssignmentController diimpor jika route ini aktif
     Route::put('/assignments/{assignment}/grade', [AssignmentController::class, 'grade'])->name('assignments.grade');
 });
 

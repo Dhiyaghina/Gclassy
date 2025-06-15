@@ -76,10 +76,9 @@ class DashboardController extends Controller
         $payment = null;
 
         if (!$isEnrolled && $classRoom->isBimbel()) {
-            // Gunakan latest() pada query builder untuk mendapatkan pembayaran terbaru
             $payment = $student->payments()
                                ->where('class_room_id', $classRoom->id)
-                               ->latest() // Ini setara dengan orderByDesc('created_at')
+                               ->latest()
                                ->first();
             if ($payment) {
                 $paymentStatus = $payment->status;
@@ -92,15 +91,31 @@ class DashboardController extends Controller
             $hasAccessToMaterials = true;
         } elseif ($classRoom->isBimbel() && $payment && $payment->isApproved()) {
             $hasAccessToMaterials = true;
+            // Jika akses diberikan melalui pembayaran, tambahkan student ke kelas_student pivot
+            // Ini penting agar relasi student->classRooms->contains() bekerja dengan benar
+            // untuk cek akses tugas, forum, dll.
+            if (!$isEnrolled) {
+                $student->classRooms()->attach($classRoom->id);
+                $isEnrolled = true; // Perbarui status pendaftaran lokal
+            }
         } elseif (!$classRoom->isBimbel()) {
             $hasAccessToMaterials = true; // Kelas reguler otomatis akses
+            // Untuk kelas reguler, jika student belum terdaftar di pivot, daftarkan
+            if (!$isEnrolled) {
+                 $student->classRooms()->attach($classRoom->id);
+                 $isEnrolled = true; // Perbarui status pendaftaran lokal
+            }
         }
 
         // Jika sudah memiliki akses, ambil materi (tasks)
-        // Jika tidak memiliki akses, kembalikan koleksi kosong untuk menghindari error
-        $tasks = $hasAccessToMaterials ? $classRoom->tasks()->get() : collect();
+        // Eager load assignments untuk *siswa saat ini* pada setiap tugas
+        $tasks = collect();
+        if ($hasAccessToMaterials) {
+            $tasks = $classRoom->tasks()->with(['assignments' => function($query) use ($student) {
+                $query->where('student_id', $student->id);
+            }])->get();
+        }
 
         return view('student.class_detail', compact('classRoom', 'isEnrolled', 'paymentStatus', 'payment', 'hasAccessToMaterials', 'tasks'));
     }
 }
-
