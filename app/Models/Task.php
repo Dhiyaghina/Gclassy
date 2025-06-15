@@ -51,10 +51,5 @@ class Task extends Model
         return $this->hasMany(Assignment::class);
     }
 
-    public function assignments()
-    {
-        return $this->hasMany(Assignment::class);
-    }
-
     
 }
