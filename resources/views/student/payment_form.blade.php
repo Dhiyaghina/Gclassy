@@ -30,12 +30,21 @@
                     <form action="{{ route('student.payment.process', $classRoom) }}" method="POST" enctype="multipart/form-data">
                         @csrf
 
+                        {{-- Informasi Transfer Bank BSI --}}
+                        <div class="bg-blue-50 border-l-4 border-blue-500 text-blue-700 p-4 mb-6 rounded-md" role="alert">
+                            <p class="font-bold">Informasi Pembayaran (Khusus Transfer Bank)</p>
+                            <p class="mt-2">Silakan lakukan transfer ke rekening berikut:</p>
+                            <p class="mt-1"><strong>Bank:</strong> BSI (Bank Syariah Indonesia)</p>
+                            <p><strong>Nomor Rekening:</strong> 1002278911</p>
+                            <p class="mt-2 text-sm">Pastikan nominal transfer sesuai dengan "Jumlah Pembayaran".</p>
+                        </div>
+                        {{-- End Informasi Transfer Bank BSI --}}
+
                         <div class="mb-4">
                             <label for="amount" class="block text-sm font-medium text-gray-700">Jumlah Pembayaran</label>
                             <input type="number" id="amount" name="amount" step="0.01" value="{{ old('amount', $classRoom->price) }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required>
                         </div>
 
-                        {{-- Bagian Payment Method yang Diperbarui --}}
                         <div class="mb-4">
                             <label for="payment_method" class="block text-sm font-medium text-gray-700 mb-2">Metode Pembayaran</label>
                             <select name="payment_method" id="payment_method" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
