@@ -9,17 +9,39 @@ class Assignment extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['task_id', 'student_id', 'folder_path', 'file_path', 'nilai'];
+   protected $fillable = [
+        'class_room_id',
+        'name',
+        'description',
+        'attachment',
+        'due_date'
+    ];
 
-    // Relasi ke task
-    public function task()
+    protected $casts = [
+        'due_date' => 'date'
+    ];
+
+    // Relasi ke class room
+    public function classRoom()
     {
-        return $this->belongsTo(Task::class);
+        return $this->belongsTo(ClassRoom::class);
     }
 
-    // Relasi ke student
-    public function student()
+    // Relasi ke submissions
+    public function submissions()
     {
-        return $this->belongsTo(Student::class);
+        return $this->hasMany(AssignmentSubmission::class);
+    }
+
+    // Get submitted assignments count
+    public function getSubmittedCountAttribute()
+    {
+        return $this->submissions()->count();
+    }
+
+    // Check if assignment is overdue
+    public function getIsOverdueAttribute()
+    {
+        return $this->due_date < now();
     }
 }

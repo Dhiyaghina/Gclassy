@@ -45,4 +45,11 @@ class Task extends Model
     {
         return $this->attachment ? asset('storage/' . $this->attachment) : null;
     }
+
+    public function assignments()
+    {
+        return $this->hasMany(Assignment::class);
+    }
+
+    
 }

@@ -172,6 +172,21 @@ class ClassController extends Controller
 
         return redirect()->route('teacher.classes.tugas', ['classRoom' => $task->classRoom->id])->with('success', 'Tugas berhasil dihapus.');
     }
+
+     public function assignments(ClassRoom $classRoom)
+    {
+        $teacher = auth()->user()->teacher;
+        
+        // Pastikan kelas ini milik guru yang sedang login
+        if ($classRoom->teacher_id !== $teacher->id) {
+            abort(403, 'Anda tidak memiliki akses ke kelas ini.');
+        }
+
+        // Mengambil semua tugas yang terkait dengan kelas ini
+        $assignments = Assignment::where('class_room_id', $classRoom->id)->get();
+
+        return view('teacher.classes.assignments.index', compact('assignments', 'classRoom'));
+    }
 }
 
 

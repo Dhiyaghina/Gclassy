@@ -96,4 +96,9 @@ class ClassRoom extends Model
         return $this->hasMany(Task::class);
     }
 
+    public function assignments()
+    {
+        return $this->hasMany(Assignment::class);
+    }
+
 }

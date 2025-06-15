@@ -12,7 +12,7 @@ class TaskController extends Controller
     {
         $tasks = $classRoom->tasks()->latest()->get();
         // dd($classRoom->id);
-        return view('teacher.classes.TugasKelas', compact('classRoom', 'tasks'));
+        return view('teacher.classes.Materi', compact('classRoom', 'tasks'));
 
     }
 

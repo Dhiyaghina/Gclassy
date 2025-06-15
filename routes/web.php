@@ -6,6 +6,8 @@ use App\Http\Controllers\Admin\TeacherController;
 use App\Http\Controllers\Teacher\DashboardController as TeacherDashboardController;
 use App\Http\Controllers\Teacher\ClassController as TeacherClassController;
 use App\Http\Controllers\Teacher\TaskController;
+// use App\Http\Controllers\Teacher\TugasController;
+use App\Http\Controllers\Teacher\AssignmentController as TeacherAssignmentController; 
 use App\Http\Controllers\Admin\StudentController;
 use App\Http\Controllers\Admin\ClassRoomController;
 use App\Http\Controllers\Admin\PaymentController;
@@ -100,6 +102,16 @@ Route::prefix('teacher')->middleware(['auth', 'teacher'])->name('teacher.')->gro
     Route::get('/classes/{classRoom}', [TeacherClassController::class, 'show'])->name('classes.show');
     Route::get('/classes/{classRoom}/orang', [TeacherClassController::class, 'orang'])->name('classes.orang');
     Route::resource('/classes/{classRoom}/tasks', TaskController::class)->names('tasks');
-    Route::put('/assignments/{assignment}/grade', [AssignmentController::class, 'grade'])->name('assignments.grade');
+    //  Route::get('/tasks/{taskId}/assignments', [AssignmentController::class, 'show'])->name('tasks.show');
+
+    // Assignment Routes (menggunakan parameter 'assignment' untuk konsistensi dengan Laravel)
+    Route::get('/classes/{classRoom}/tugas', [TeacherAssignmentController::class, 'index'])->name('classes.assignments.index');
+    Route::post('/classes/{classRoom}/tugas', [TeacherAssignmentController::class, 'store'])->name('assignments.store');
+    Route::get('/classes/{classRoom}/tugas/{assignment}', [TeacherAssignmentController::class, 'show'])->name('classes.assignments.show');
+    Route::put('/classes/{classRoom}/tugas/{assignment}', [TeacherAssignmentController::class, 'update'])->name('assignments.update');
+    Route::delete('/classes/{classRoom}/tugas/{assignment}', [TeacherAssignmentController::class, 'destroy'])->name('assignments.destroy');
+    
+    // Grading submission
+    Route::post('/submission/{submission}/grade', [TeacherAssignmentController::class, 'gradeSubmission'])->name('submissions.grade');
 });
 require __DIR__.'/auth.php';
