@@ -127,14 +127,13 @@ class DashboardController extends Controller
         }
 
         // Jika sudah memiliki akses, ambil materi (tasks)
-        // Eager load assignments untuk *siswa saat ini* pada setiap tugas
         $tasks = collect();
+        $assignments = collect();
         if ($hasAccessToMaterials) {
-            $tasks = $classRoom->tasks()->with(['assignments' => function($query) use ($student) {
-                $query->where('student_id', $student->id);
-            }])->get();
+            $tasks = $classRoom->tasks()->get();
+            $assignments = $classRoom->assignments()->get();
         }
 
-        return view('student.class_detail', compact('classRoom', 'isEnrolled', 'paymentStatus', 'payment', 'hasAccessToMaterials', 'tasks'));
+        return view('student.class_detail', compact('classRoom', 'isEnrolled', 'paymentStatus', 'payment', 'hasAccessToMaterials', 'tasks', 'assignments'));
     }
 }
