@@ -17,7 +17,7 @@ use App\Http\Controllers\CommentController;
 use App\Http\Controllers\Student\DashboardController as StudentDashboardController;
 use App\Http\Controllers\Student\PaymentController as StudentPaymentController;
 use App\Http\Controllers\Student\EnrollmentController;
-use App\Http\Controllers\Student\AssignmentController as StudentAssignmentController; // Import the new controller
+use App\Http\Controllers\Student\AssignmentSubmissionController as StudentAssignmentSubmissionController; // Import the new controller
 use App\Http\Controllers\Teacher\AssignmentController; // Diperlukan jika route assignments.grade aktif
 
 /*
@@ -108,9 +108,9 @@ Route::middleware('auth')->group(function () {
 
         // New student assignment routes
         // Route untuk menampilkan form upload/edit tugas
-        Route::get('/tasks/{task}/assignment/upload', [StudentAssignmentController::class, 'create'])->name('assignments.create');
+        Route::get('/assignment-submission/{assignment}/upload', [StudentAssignmentSubmissionController::class, 'create'])->name('assignments-submission.create');
         // Route untuk menyimpan/memperbarui tugas
-        Route::post('/tasks/{task}/assignment', [StudentAssignmentController::class, 'store'])->name('assignments.store');
+        Route::post('/assignment-submission/{assignment}', [StudentAssignmentSubmissionController::class, 'store'])->name('assignments-submission.store');
     });
 });
 

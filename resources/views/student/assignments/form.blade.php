@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ $assignment ? __('Ubah Tugas: ') : __('Unggah Tugas: ') }} {{ $task->title }}
+            {{ $assignmentSubmission ? __('Ubah Tugas: ') : __('Unggah Tugas: ') }} {{ $assignment->title }}
         </h2>
     </x-slot>
 
@@ -27,7 +27,7 @@
                         </div>
                     @endif
 
-                    <form action="{{ route('student.assignments.store', $task) }}" method="POST" enctype="multipart/form-data">
+                    <form action="{{ route('student.assignments-submission.store', $assignment) }}" method="POST" enctype="multipart/form-data">
                         @csrf
 
                         <div class="mb-4">
@@ -37,14 +37,14 @@
                                 file:rounded-full file:border-0
                                 file:text-sm file:font-semibold
                                 file:bg-violet-50 file:text-violet-700
-                                hover:file:bg-violet-100" {{ $assignment ? '' : 'required' }}>
+                                hover:file:bg-violet-100" {{ $assignmentSubmission ? '' : 'required' }}>
                             <p class="mt-1 text-xs text-gray-500">
                                 Unggah file tugas Anda (PDF, DOC, DOCX, ZIP, RAR, TXT, JPG, JPEG, PNG). Maks 10MB.
                             </p>
-                            @if ($assignment && $assignment->file_path)
+                            @if ($assignmentSubmission && $assignmentSubmission->file_path)
                                 <p class="mt-2 text-sm text-gray-600">File yang sudah diunggah: 
-                                    <a href="{{ Storage::url($assignment->file_path) }}" target="_blank" class="text-blue-500 hover:underline">
-                                        {{ basename($assignment->file_path) }}
+                                    <a href="{{ Storage::url($assignmentSubmission->file_path) }}" target="_blank" class="text-blue-500 hover:underline">
+                                        {{ basename($assignmentSubmission->file_path) }}
                                     </a>
                                     (Akan diganti jika Anda mengunggah file baru)
                                 </p>
@@ -54,9 +54,23 @@
                             @enderror
                         </div>
 
+                        <!-- Menambahkan Field submission_text (Opsional) -->
+                        <div class="mb-4">
+                            <label for="submission_text" class="block text-sm font-medium text-gray-700">Komentar / Deskripsi (Opsional)</label>
+                            <textarea id="submission_text" name="submission_text" rows="4" class="mt-1 block w-full text-sm text-gray-500
+                                border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500
+                                placeholder-gray-400">{{ old('submission_text', $assignmentSubmission ? $assignmentSubmission->submission_text : '') }}</textarea>
+                            <p class="mt-1 text-xs text-gray-500">
+                                Tambahkan komentar atau deskripsi tambahan untuk tugas Anda. Ini adalah field opsional.
+                            </p>
+                            @error('submission_text')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+
                         <div class="flex items-center justify-end mt-6">
                             <button type="submit" class="inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-700 focus:bg-indigo-700 active:bg-indigo-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                                {{ $assignment ? 'Perbarui Tugas' : 'Unggah Tugas' }}
+                                {{ $assignmentSubmission ? 'Perbarui Tugas' : 'Unggah Tugas' }}
                             </button>
                         </div>
                     </form>
