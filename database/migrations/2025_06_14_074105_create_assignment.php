@@ -13,6 +13,11 @@ return new class extends Migration
     {
         Schema::create('assignments', function (Blueprint $table) {
             $table->id();
+            // $table->foreignId('task_id')->constrained('tasks')->onDelete('cascade'); // Menghubungkan dengan tabel tasks
+            // $table->foreignId('student_id')->constrained()->onDelete('cascade'); // Menghubungkan dengan tabel students (misalnya)
+            // $table->string('folder_path')->nullable(); 
+            // $table->decimal('nilai', 5, 2)->nullable();
+            // $table->timestamps();
             $table->foreignId('class_room_id')->constrained('class_rooms')->onDelete('cascade');  // Menghubungkan dengan tabel tasks $table->foreignId('student_id')->constrained()->onDelete('cascade'); // Menghubungkan dengan tabel students
             $table->string('name'); // Nama tugas
             $table->text('description'); // Deskripsi tugas

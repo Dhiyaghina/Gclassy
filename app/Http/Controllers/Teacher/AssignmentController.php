@@ -37,6 +37,23 @@ class AssignmentController extends Controller
         return redirect()->route('assignments.submit', $taskId)->with('success', 'Tugas berhasil dikumpulkan');
     }
 
+    // Guru memberikan nilai pada tugas
+    public function grade(Request $request, $assignmentId)
+    {
+        $assignment = Assignment::findOrFail($assignmentId);
+        
+        $request->validate([
+            'nilai' => 'required|numeric|min:0|max:100',
+        ]);
+
+        // Update nilai
+        $assignment->update([
+            'nilai' => $request->nilai,
+        ]);
+
+        return redirect()->back()->with('success', 'Nilai berhasil diberikan');
+    }
+
     // Menampilkan daftar tugas untuk kelas tertentu
     public function index($classRoomId)
     {

@@ -121,6 +121,7 @@ Route::prefix('teacher')->middleware(['auth', 'teacher'])->name('teacher.')->gro
     Route::get('/classes/{classRoom}', [TeacherClassController::class, 'show'])->name('classes.show');
     Route::get('/classes/{classRoom}/orang', [TeacherClassController::class, 'orang'])->name('classes.orang');
     Route::resource('/classes/{classRoom}/tasks', TaskController::class)->names('tasks');
+    Route::put('/assignments/{assignment}/grade', [AssignmentController::class, 'grade'])->name('assignments.grade');
     //  Route::get('/tasks/{taskId}/assignments', [AssignmentController::class, 'show'])->name('tasks.show');
 
     // Assignment Routes (menggunakan parameter 'assignment' untuk konsistensi dengan Laravel)

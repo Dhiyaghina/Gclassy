@@ -9,7 +9,8 @@ class Assignment extends Model
 {
     use HasFactory;
 
-   protected $fillable = [
+    // protected $fillable = ['task_id', 'student_id', 'folder_path', 'file_path', 'nilai'];
+    protected $fillable = [
         'class_room_id',
         'name',
         'description',
@@ -20,6 +21,18 @@ class Assignment extends Model
     protected $casts = [
         'due_date' => 'date'
     ];
+
+    // Relasi ke task
+    public function task()
+    {
+        return $this->belongsTo(Task::class);
+    }
+
+    // Relasi ke student
+    public function student()
+    {
+        return $this->belongsTo(Student::class);
+    }
 
     // Relasi ke class room
     public function classRoom()
