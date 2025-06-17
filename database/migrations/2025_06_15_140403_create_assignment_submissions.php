@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('assignment_id')->constrained('assignments')->onDelete('cascade');
             $table->foreignId('student_id')->constrained('users')->onDelete('cascade'); // Asumsi student adalah user
+            $table->string('folder_path')->nullable(); // Path folder yang dikumpulkan
             $table->string('file_path')->nullable(); // Path file yang dikumpulkan
             $table->text('submission_text')->nullable(); // Teks submission jika ada
             $table->decimal('grade', 5, 2)->nullable(); // Nilai tugas

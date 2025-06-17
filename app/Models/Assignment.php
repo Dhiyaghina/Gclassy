@@ -44,4 +44,13 @@ class Assignment extends Model
     {
         return $this->due_date < now();
     }
+
+    /**
+     * Jika ada file attachment, pastikan file tersimpan dengan benar.
+     * @return string
+     */
+    public function getAttachmentUrl()
+    {
+        return $this->attachment ? asset('storage/' . $this->attachment) : null;
+    }
 }
