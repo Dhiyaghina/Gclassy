@@ -1,5 +1,28 @@
 @extends('teacher.layout')
 
+@section('title', 'Buat Tugas - ' . $classRoom->name)
+
+@section('header')
+    <div class="flex items-center justify-between">
+        <div>
+            <h1 class="text-3xl font-bold leading-tight text-gray-900">{{ $classRoom->name }}</h1>
+            <p class="mt-2 text-sm text-gray-600">{{ $classRoom->subject }}</p>
+            <div class="nav nav-pills nav-fill">
+                <a class="nav-link active" aria-current="page" href="{{ route('teacher.classes.show', ['classRoom' => $classRoom->id]) }}">Informasi</a>
+                <a class="nav-link" href="{{ route('teacher.tasks.index', ['classRoom' => $classRoom->id]) }}">Materi</a>
+                <a class="nav-link" href="{{ route('teacher.classes.assignments.index', ['classRoom' => $classRoom->id]) }}">Tugas</a> 
+                <a class="nav-link" href="{{ route('teacher.classes.orang', ['classRoom'=>$classRoom->id]) }}">Orang</a>
+            </div>
+        </div>        
+        <div class="flex items-center space-x-3">
+            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium {{ $classRoom->type === 'reguler' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800' }}">
+                {{ ucfirst($classRoom->type) }}
+            </span>
+        </div>
+        
+    </div>
+@endsection
+
 @section('content')
 <div class="container">
     <div class="row">

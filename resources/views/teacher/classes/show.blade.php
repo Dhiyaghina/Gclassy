@@ -8,11 +8,10 @@
             <h1 class="text-3xl font-bold leading-tight text-gray-900">{{ $classRoom->name }}</h1>
             <p class="mt-2 text-sm text-gray-600">{{ $classRoom->subject }}</p>
             <div class="nav nav-pills nav-fill">
-                <a class="nav-link active" aria-current="page" href="{{ route('teacher.classes.show', ['classRoom' => $classRoom->id]) }}">Forum</a>
+                <a class="nav-link active" aria-current="page" href="{{ route('teacher.classes.show', ['classRoom' => $classRoom->id]) }}">Informasi</a>
                 <a class="nav-link" href="{{ route('teacher.tasks.index', ['classRoom' => $classRoom->id]) }}">Materi</a>
-                <a class="nav-link" href="#">Tugas</a>
+                <a class="nav-link" href="{{ route('teacher.classes.assignments.index', ['classRoom' => $classRoom->id]) }}">Tugas</a> 
                 <a class="nav-link" href="{{ route('teacher.classes.orang', ['classRoom'=>$classRoom->id]) }}">Orang</a>
-                <a class="nav-link" href="#">Nilai</a>
             </div>
         </div>        
         <div class="flex items-center space-x-3">
@@ -25,7 +24,6 @@
 @endsection
 
 @section('content')
-<div class="grid grid-cols-3 lg:grid-cols-3 gap-6">
     <!-- Detail Kelas -->
     <div class="lg:col-span-1">
         <div class="bg-white shadow rounded-lg">
@@ -75,9 +73,9 @@
             </div>
             </div>
 
-            <div class="lg:col-span-2">
+            <!-- <div class="lg:col-span-2"> -->
         <!-- Form untuk membuat post baru -->
-        <div class="bg-white shadow rounded-lg mb-6">
+        <!-- <div class="bg-white shadow rounded-lg mb-6">
             <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
                 <h3 class="text-lg leading-6 font-medium text-gray-900">Buat Postingan Baru</h3>
             </div>
@@ -132,11 +130,11 @@
         </div>
         
 
-        <!-- Daftar Postingan-->
+        Daftar Postingan
         @forelse($classRoom->forum as $forum)
             <div class="bg-white shadow rounded-lg mb-6">
                 <div class="px-4 py-5 sm:p-6">
-                    <!-- Header Post -->
+                    Header Post
                     <div class="flex items-start justify-between mb-4">
                         <div class="flex items-center">
                             <div class="flex-shrink-0">
@@ -166,7 +164,7 @@
                         @endif
                     </div>
 
-                    <!-- Konten Post -->
+                    Konten Post
                     <div class="mb-4">
                         <p class="text-gray-900 whitespace-pre-wrap">{{ $forum->content }}</p>
                         
@@ -186,13 +184,13 @@
                         @endif
                     </div>
 
-                    <!-- Komentar -->
+                    Komentar
                     <div class="border-t pt-4">
                         <h4 class="text-sm font-medium text-gray-900 mb-3">
                             Komentar ({{ $forum->comments->count() }})
                         </h4>
 
-                        <!-- Form Komentar -->
+                        Form Komentar
                         <form action="{{ route('comments.store', $forum) }}" method="POST" class="mb-4">
                             @csrf
                             <div class="flex space-x-3">
@@ -222,7 +220,7 @@
                             </div>
                         </form>
 
-                        <!-- Daftar Komentar -->
+                        Daftar Komentar
                         @foreach($forum->comments as $comment)
                             <div class="flex space-x-3 mb-3">
                                 <div class="flex-shrink-0">
@@ -273,6 +271,6 @@
     </div>
         </div>
 
-    </div>  
-</div>
+    </div>   -->
+
 @endsection
