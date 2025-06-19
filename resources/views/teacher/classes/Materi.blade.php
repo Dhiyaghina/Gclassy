@@ -7,11 +7,11 @@
         <div>
             <h1 class="text-3xl font-bold leading-tight text-gray-900">{{ $classRoom->name }}</h1>
             <p class="mt-2 text-sm text-gray-600">{{ $classRoom->subject }}</p>
-            <div class="nav nav-pills nav-fill">
-                <a class="nav-link active" aria-current="page" href="{{ route('teacher.classes.show', ['classRoom' => $classRoom->id]) }}">Informasi</a>
-                <a class="nav-link" href="{{ route('teacher.tasks.index', ['classRoom' => $classRoom->id]) }}">Materi</a>
-                <a class="nav-link" href="{{ route('teacher.classes.assignments.index', ['classRoom' => $classRoom->id]) }}">Tugas</a> 
-                <a class="nav-link" href="{{ route('teacher.classes.orang', ['classRoom'=>$classRoom->id]) }}">Orang</a>
+            <div class="hidden space-x-8 sm:-my-px sm:ml-4 sm:flex">
+                <x-nav-link : href="{{ route('teacher.classes.show', ['classRoom' => $classRoom->id]) }}">Informasi</x-nav-link>
+                <x-nav-link : href="{{ route('teacher.tasks.index', ['classRoom' => $classRoom->id]) }}">Materi</x-nav-link>
+                <x-nav-link : href="{{ route('teacher.classes.assignments.index', ['classRoom' => $classRoom->id]) }}">Tugas</x-nav-link> 
+                <x-nav-link : href="{{ route('teacher.classes.orang', ['classRoom'=>$classRoom->id]) }}">Orang</x-nav-link>
             </div>
         </div>        
         <div class="flex items-center space-x-3">
@@ -36,16 +36,11 @@
     @endif
 
     <!-- Form Tambah Materi -->
-    <div class="row mb-5">
-        <div class="col-12">
-            <div class="card border-0 shadow-sm rounded-4">
-                <div class="card-header bg-white border-0 pt-4 pb-0">
-                    <h5 class="fw-bold text-primary mb-0">
-                        <i class="fas fa-plus-circle me-2"></i>
-                        Tambah Materi Baru
-                    </h5>
-                    <small class="text-muted">Masukkan detail materi pembelajaran yang ingin ditambahkan</small>
-                </div>
+            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="p-6 text-gray-900">
+                    <div class="card-header bg-white border-0 pt-4 pb-0">
+                        <h3 class="text-2xl font-bold text-gray-800">  Tambah Materi Baru</h3>
+                    </div>
                 <div class="card-body p-4">
                     <form action="{{ route('teacher.tasks.store', ['classRoom' => $classRoom->id]) }}" method="POST" enctype="multipart/form-data">
                         @csrf
@@ -57,7 +52,9 @@
                                 </label>
                                 <br>
                                 <input type="text" name="title" placeholder="Masukkan judul materi..." required 
-                                       class="form-control form-control-lg rounded-3 border-light shadow-sm">
+                                       class="mt-1 block w-full text-sm text-gray-500
+                                border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500
+                                placeholder-gray-400">
                                 @error('title')
                                     <div class="alert alert-danger mt-2 rounded-3">
                                         <i class="fas fa-exclamation-triangle me-1"></i>
@@ -73,7 +70,9 @@
                                 </label>
                                 <br>
                                 <textarea name="content" placeholder="Masukkan konten materi pembelajaran..." required 
-                                          class="form-control rounded-3 border-light shadow-sm" rows="6"></textarea>
+                                          class="mt-1 block w-full text-sm text-gray-500
+                                border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500
+                                placeholder-gray-400" rows="6"></textarea>
                                 @error('content')
                                     <div class="alert alert-danger mt-2 rounded-3">
                                         <i class="fas fa-exclamation-triangle me-1"></i>
@@ -87,6 +86,7 @@
                                     <i class="fas fa-paperclip me-1"></i>
                                     Lampiran (Opsional)
                                 </label>
+                                <br>
                                 <input type="file" name="attachment" 
                                        class="form-control rounded-3 border-light shadow-sm">
                                        <br>
@@ -103,8 +103,7 @@
                             </div>
 
                             <div class="col-12">
-                                <button type="submit" class="btn btn-primary btn-lg rounded-3 px-4 shadow-sm">
-                                    <i class="fas fa-plus me-2"></i>
+                                <button type="submit" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
                                     Tambah Materi
                                 </button>
                             </div>
@@ -113,83 +112,59 @@
                 </div>
             </div>
         </div>
-    </div>
-<br>
+        <br>
+
     <!-- Daftar Materi -->
-    <div class="row">
-        <div class="col-12">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h5 class="fw-bold text-dark mb-0">
-                    <i class="fas fa-list me-2"></i>
-                    Daftar Materi Pembelajaran
-                </h5>
+    <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+        <div class="p-6 text-gray-900">
+            <div class="card-header bg-white border-0 pt-4 pb-0">
+                <h3 class="text-2xl font-bold text-gray-800">Daftar Materi Pembelajaran</h3>
                 <span class="badge bg-primary rounded-pill">{{ count($tasks) }} materi</span>
             </div>
 
             @if(count($tasks) > 0)
-                <div class="row">
+                    <ul class="space-y-2">
                     @foreach($tasks as $task)
-                        <div class="col-md-6 col-lg-4 mb-4">
-                            <div class="card h-100 border-0 shadow-sm rounded-4 material-card">
+                     <li class="bg-gray-50 p-4 rounded-lg shadow-sm border border-gray-200">
+                        <div class="flex justify-between items-center mb-1">
                                 <div class="card-body p-4">
                                     <div>
-                                                <h6 class="fw-bold text-dark mb-1">{{ $task->title }}</h6>
-                                                <h2 class="text-muted mb-0 content-preview">
+                                        <h5 class="text-lg font-bold text-gray-800">
+                                            {{ $task->title }} </h5> 
+                                                <h4 class="text-muted mb-0 content-preview">
                                                     {{ Str::limit($task->content, 100) }}
-                                                </h2>
-                                                <small class="text-muted">
+                                                </h4>
+                                                <!-- <small class="text-muted">
                                                     Diposting {{ $task->created_at->diffForHumans() }}
-                                                </small>
+                                                </small> -->
                                             </div>
-                                    <div class="d-flex justify-content-between align-items-start mb-3">
-                                        
-                                        
-                                        <!-- Dropdown Menu -->
-                                        <div class="dropdown">
-                                            <button class="btn btn-link text-muted p-0" type="button" data-bs-toggle="dropdown">
-                                                <i class="fas fa-ellipsis-v"></i>
-                                            </button>
-                                            <ul class="dropdown-menu dropdown-menu-end shadow-sm rounded-3">
-                                                <li>
-                                                    <button class="dropdown-item" onclick="toggleEditForm({{ $task->id }})">
-                                                        <i class="fas fa-edit me-2"></i>Edit
-                                                    </button>
-                                                </li>
-                                                <li>
-                                                    <form action="{{ route('teacher.tasks.destroy', [$classRoom, $task]) }}" method="POST" 
-                                                          onsubmit="return confirm('Apakah Anda yakin ingin menghapus materi ini?')" class="d-inline">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <button type="submit" class="dropdown-item text-danger">
-                                                            <i class="fas fa-trash me-2"></i>Hapus
-                                                        </button>
-                                                    </form>
-                                                </li>
-                                                @if($task->attachment)
-                                                    <li><hr class="dropdown-divider"></li>
-                                                    <li>
-                                                        <a href="{{ asset('storage/' . $task->attachment) }}" target="_blank" 
-                                                           class="dropdown-item">
-                                                            <i class="fas fa-download me-2"></i>Unduh Lampiran
-                                                        </a>
-                                                    </li>
-                                                @endif
-                                            </ul>
-                                        </div>
-                                    </div>
-
-                                    <!-- Preview Konten -->
                                     <div class="mb-3">
                                         @if($task->attachment)
                                             <div class="attachment-preview bg-light rounded-3 p-3 mb-3">
                                                 <div class="d-flex align-items-center">
-                                                    <i class="fas fa-paperclip text-muted me-2"></i>
-                                                    <span class="text-muted small">Lampiran tersedia</span>
+                                                    <a href="{{ asset('storage/' . $task->attachment) }}" target="_blank" 
+                                                           class="dropdown-item">
+                                                            <i class="fas fa-download me-2"></i>Unduh Lampiran
+                                                        </a>
                                                 </div>
                                             </div>
                                         @endif
-                                        
                                     </div>
+                                        <div class="dropdown">
+                                                <div class="flex space-x-2">
+                                                    <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onclick="toggleEditForm({{ $task->id }})">
+                                                        <i class="fas fa-edit me-2"></i>Edit
+                                                    </button>
+                                                    <form action="{{ route('teacher.tasks.destroy', [$classRoom, $task]) }}" method="POST" 
+                                                          onsubmit="return confirm('Apakah Anda yakin ingin menghapus materi ini?')" class="d-inline">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-2 rounded">
+                                                            <i class="fas fa-trash me-2"></i>Hapus
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                        </div>
                                 </div>
 
                                 <!-- Form Edit (Hidden by default) -->
@@ -206,7 +181,7 @@
                                             @method('PUT')
                                             
                                             <div class="mb-3">
-                                                <label class="form-label fw-semibold text-dark">Judul Materi</label>
+                                                <label class="form-label fw-semibold text-dark">Judul Materi</label> <br>
                                                 <input type="text" name="title" value="{{ $task->title }}" 
                                                        class="form-control rounded-3 border-light">
                                                 @error('title')
@@ -218,7 +193,7 @@
                                             </div>
 
                                             <div class="mb-3">
-                                                <label class="form-label fw-semibold text-dark">Isi Materi</label>
+                                                <label class="form-label fw-semibold text-dark">Isi Materi</label> <br>
                                                 <textarea name="content" class="form-control rounded-3 border-light" 
                                                           rows="4">{{ $task->content }}</textarea>
                                                 @error('content')
@@ -230,7 +205,7 @@
                                             </div>
 
                                             <div class="mb-3">
-                                                <label class="form-label fw-semibold text-dark">Lampiran Baru</label>
+                                                <label class="form-label fw-semibold text-dark">Lampiran Baru</label> <br>
                                                 <input type="file" name="attachment" 
                                                        class="form-control rounded-3 border-light">
                                                 @error('attachment')
@@ -242,11 +217,11 @@
                                             </div>
 
                                             <div class="d-flex gap-2">
-                                                <button type="submit" class="btn btn-success btn-sm rounded-3 flex-fill">
+                                                <button type="submit" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
                                                     <i class="fas fa-save me-1"></i>
                                                     Simpan
                                                 </button>
-                                                <button type="button" class="btn btn-secondary btn-sm rounded-3" 
+                                                <button type="button" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded" 
                                                         onclick="toggleEditForm({{ $task->id }})">
                                                     <i class="fas fa-times me-1"></i>
                                                     Batal
@@ -255,7 +230,7 @@
                                         </form>
                                     </div>
                                 </div>
-                            </div>
+                            <!-- </div> -->
                         </div>
                     @endforeach
                 </div>
