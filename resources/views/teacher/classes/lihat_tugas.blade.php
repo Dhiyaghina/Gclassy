@@ -7,11 +7,11 @@
         <div>
             <h1 class="text-3xl font-bold leading-tight text-gray-900">{{ $classRoom->name }}</h1>
             <p class="mt-2 text-sm text-gray-600">{{ $classRoom->subject }}</p>
-            <div class="nav nav-pills nav-fill">
-                <a class="nav-link active" aria-current="page" href="{{ route('teacher.classes.show', ['classRoom' => $classRoom->id]) }}">Informasi</a>
-                <a class="nav-link" href="{{ route('teacher.tasks.index', ['classRoom' => $classRoom->id]) }}">Materi</a>
-                <a class="nav-link" href="{{ route('teacher.classes.assignments.index', ['classRoom' => $classRoom->id]) }}">Tugas</a> 
-                <a class="nav-link" href="{{ route('teacher.classes.orang', ['classRoom'=>$classRoom->id]) }}">Orang</a>
+            <div class="hidden space-x-8 sm:-my-px sm:ml-4 sm:flex">
+                <x-nav-link : href="{{ route('teacher.classes.show', ['classRoom' => $classRoom->id]) }}">Informasi</x-nav-link>
+                <x-nav-link : href="{{ route('teacher.tasks.index', ['classRoom' => $classRoom->id]) }}">Materi</x-nav-link>
+                <x-nav-link : href="{{ route('teacher.classes.assignments.index', ['classRoom' => $classRoom->id]) }}">Tugas</x-nav-link> 
+                <x-nav-link : href="{{ route('teacher.classes.orang', ['classRoom'=>$classRoom->id]) }}">Orang</x-nav-link>
             </div>
         </div>        
         <div class="flex items-center space-x-3">
@@ -28,11 +28,13 @@
     <div class="row">
         <div class="col-12">
             <!-- Header -->
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h1>Detail Tugas: {{ $assignment->name }}</h1>
-                <a href="{{ route('teacher.classes.assignments.index', $classRoom->id) }}" class="btn btn-secondary">
-                    <i class="fas fa-arrow-left"></i> Kembali ke Daftar Tugas
-                </a>
+            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="p-6 text-gray-900">
+                    <div class="card-header bg-white border-0 pt-4 pb-0">
+                        <a href="{{ route('teacher.classes.assignments.index', $classRoom->id) }}"
+                        class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-black border border-black hover:bg-gray-400">
+                            &laquo; Kembali </a>
+                        <h3 class="text-2xl font-bold text-gray-800">Tugas {{ $assignment->name }}</h3>
             </div>
 
             <!-- Alert Messages -->
@@ -54,49 +56,28 @@
             <div class="row">
                 <div class="col-lg-8">
                     <div class="card mb-4">
-                        <div class="card-header">
-                            <h5 class="mb-0">
-                                <i class="fas fa-info-circle"></i> Informasi Tugas
-                            </h5>
-                        </div>
                         <div class="card-body">
                             <dl class="row">
-                                <dt class="col-sm-3">Nama Tugas:</dt>
-                                <dd class="col-sm-9">{{ $assignment->name }}</dd>
-                                
-                                <dt class="col-sm-3">Kelas:</dt>
-                                <dd class="col-sm-9">{{ $assignment->classRoom->name }}</dd>
-                                
-                                <dt class="col-sm-3">Tanggal Pengumpulan:</dt>
-                                <dd class="col-sm-9">
-                                    {{ $assignment->due_date->format('d M Y') }}
+                                <label class="form-label fw-semibold text-dark">
+                                    <i class="fas fa-heading me-1"></i>
+                                    Kelas: {{ $assignment->classRoom->name }}
+                                </label>
+                                <br>
+                                <label class="form-label fw-semibold text-dark">
+                                    Tenggat Pengumpulan: {{ $assignment->due_date->format('d M Y') }}
                                     @if($assignment->is_overdue)
-                                        <span class="badge bg-danger ms-2">Terlambat</span>
+                                        <span class="badge bg-danger ms-2 text-sm font-medium text-red-900">(Lewat Tenggat)</span>
                                     @else
-                                        <span class="badge bg-success ms-2">Aktif</span>
+                                        <span class="badge bg-success ms-2">(Belum Tenggat)</span>
                                     @endif
-                                </dd>
-                                
-                                <dt class="col-sm-3">Deskripsi:</dt>
-                                <dd class="col-sm-9">{{ $assignment->description }}</dd>
-                                
-                                @if($assignment->attachment)
-                                <dt class="col-sm-3">Lampiran:</dt>
-                                <dd class="col-sm-9">
-                                    <a href="{{ Storage::url($assignment->attachment) }}" target="_blank" class="btn btn-outline-primary btn-sm">
-                                        <i class="fas fa-download"></i> Unduh Lampiran
-                                    </a>
-                                </dd>
-                                @endif
-                                
-                                <dt class="col-sm-3">Dibuat:</dt>
-                                <dd class="col-sm-9">{{ $assignment->created_at->format('d M Y H:i') }}</dd>
-                            </dl>
+                                    </label>
+                                <br>
+                                <label class="form-label fw-semibold text-dark">Dibuat: {{ $assignment->created_at->format('d M Y H:i') }}</label>
                         </div>
                     </div>
                 </div>
                 
-                <div class="col-lg-4">
+                <!-- <div class="col-lg-4">
                     <div class="card">
                         <div class="card-header">
                             <h6 class="mb-0">
@@ -104,7 +85,7 @@
                             </h6>
                         </div>
                         <div class="card-body">
-                            <div class="row text-center">
+                            <div class="column text-center">
                                 <div class="col-6">
                                     <div class="border-end">
                                         <h3 class="text-primary">{{ $assignment->submissions->count() }}</h3>
@@ -118,54 +99,56 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> -->
             </div>
 
             <!-- Submissions -->
-            <div class="card">
+            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="card-header">
                     <h5 class="mb-0">
-                        <i class="fas fa-file-upload"></i> Submissions ({{ $assignment->submissions->count() }})
+                        <i class="fas fa-file-upload"></i> Pengumpulan ({{ $assignment->submissions->count() }})
                     </h5>
                 </div>
-                <div class="card-body">
+                <div class="bg-white shadow rounded-lg overflow-hidden">
+                    <table class="min-w-full divide-y divide-gray-200">
                     @if($assignment->submissions->count() > 0)
                         <div class="table-responsive">
-                            <table class="table table-hover">
-                                <thead class="table-light">
+                            <!-- <table class="table table-hover"> -->
+                                <thead class="bg-gray-50">
                                     <tr>
-                                        <th>#</th>
-                                        <th>Nama Siswa</th>
-                                        <th>Waktu Pengumpulan</th>
-                                        <th>File</th>
-                                        <th>Nilai</th>
-                                        <th>Status</th>
-                                        <th>Aksi</th>
+                                        <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No</th>
+                                        <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Siswa</th>
+                                        <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Waktu Pengumpulan</th>
+                                        <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">File</th>
+                                        <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nilai</th>
+                                        <!-- <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th> -->
                                     </tr>
                                 </thead>
-                                <tbody>
+                                <tbody class="bg-white divide-y divide-gray-200">
                                     @foreach($assignment->submissions as $index => $submission)
                                     <tr>
-                                        <td>{{ $index + 1 }}</td>
-                                        <td>
-                                            <strong>{{ $submission->student->name }}</strong>
-                                            <br><small class="text-muted">{{ $submission->student->email }}</small>
+                                        <td class="px-6 py-4 whitespace-nowrap"><div class="text-sm font-medium text-gray-900">{{ $index + 1 }}</div></td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm font-medium text-gray-900">{{ $submission->student->name }}</div>
                                         </td>
-                                        <td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
                                             @if($submission->submitted_at)
                                                 {{ $submission->submitted_at->format('d M Y H:i') }}
                                                 @if($submission->submitted_at > $assignment->due_date)
-                                                    <br><small class="text-danger">Terlambat</small>
+                                                    <br><small class="text-danger text-red-900">{{ $submission->updated_at }} (Terlambat)</small>
                                                 @endif
                                             @else
-                                                <span class="text-muted">Belum dikumpulkan</span>
+                                                <span class="text-muted">{{ $submission->updated_at }} </span>
                                             @endif
                                         </td>
-                                        <td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
                                             @if($submission->file_path)
-                                                <a href="{{ Storage::url($submission->file_path) }}" target="_blank" class="btn btn-outline-primary btn-sm">
-                                                    <i class="fas fa-download"></i> Unduh
+                                                <a href="{{ Storage::url($submission->file_path) }}" target="_blank" class="btn btn-outline-secondary btn-sm">
+                                                    <i class="fas fa-eye"></i> Lihat Tugas
                                                 </a>
+                                                <!-- <a href="{{ Storage::url($submission->file_path) }}" target="_blank" class="btn btn-outline-primary btn-sm">
+                                                    <i class="fas fa-download"></i> Unduh
+                                                </a> -->
                                             @endif
                                             @if($submission->submission_text)
                                                 <button class="btn btn-outline-info btn-sm" data-bs-toggle="modal" data-bs-target="#textModal{{ $submission->id }}">
@@ -173,14 +156,23 @@
                                                 </button>
                                             @endif
                                         </td>
-                                        <td>
-                                            @if($submission->grade)
-                                                <span class="badge bg-success">{{ $submission->grade }}</span>
-                                            @else
-                                                <span class="badge bg-secondary">Belum dinilai</span>
-                                            @endif
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <form action="{{ route('teacher.submissions.grade', $submission->id) }}" method="POST">
+                                                @csrf
+                                                <input type="number"
+                                                    name="grade"
+                                                    value="{{ $submission->grade }}"
+                                                    min="0"
+                                                    max="100"
+                                                    class="w-16 border-b-2 border-blue-500 focus:outline-none text-center"
+                                                    placeholder="0" />
+                                                <span class="text-gray-500">/100</span>
+                                                <input type="hidden" name="feedback" value="{{ $submission->feedback }}">
+                                            </form>
                                         </td>
-                                        <td>
+
+
+                                        <!-- <td>
                                             @if($submission->submitted_at)
                                                 @if($submission->submitted_at > $assignment->due_date)
                                                     <span class="badge bg-warning">Terlambat</span>
@@ -190,15 +182,15 @@
                                             @else
                                                 <span class="badge bg-danger">Belum Dikumpulkan</span>
                                             @endif
-                                        </td>
-                                        <td>
+                                        </td> -->
+                                        <!-- <td>
                                             @if($submission->submitted_at)
                                                 <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#gradeModal{{ $submission->id }}">
                                                     <i class="fas fa-star"></i> 
                                                     {{ $submission->grade ? 'Edit Nilai' : 'Beri Nilai' }}
                                                 </button>
                                             @endif
-                                        </td>
+                                        </td> -->
                                     </tr>
 
                                     <!-- Text Modal (jika ada submission text) -->
@@ -251,7 +243,7 @@
                                                         <button type="submit" class="btn btn-primary">Simpan Nilai</button>
                                                     </div>
                                                 </form>
-                                            </div>
+                                            <!-- </div> -->
                                         </div>
                                     </div>
                                     @endif
@@ -270,5 +262,16 @@
             </div>
         </div>
     </div>
+    </div>
+    </table>
+    </div>
 </div>
+<script>
+    document.querySelectorAll('input[name="grade"]').forEach(input => {
+        input.addEventListener('change', function () {
+            this.form.submit();
+        });
+    });
+</script>
+
 @endsection

@@ -7,11 +7,11 @@
         <div>
             <h1 class="text-3xl font-bold leading-tight text-gray-900">{{ $classRoom->name }}</h1>
             <p class="mt-2 text-sm text-gray-600">{{ $classRoom->subject }}</p>
-            <div class="nav nav-pills nav-fill">
-                <a class="nav-link active" aria-current="page" href="{{ route('teacher.classes.show', ['classRoom' => $classRoom->id]) }}">Informasi</a>
-                <a class="nav-link" href="{{ route('teacher.tasks.index', ['classRoom' => $classRoom->id]) }}">Materi</a>
-                <a class="nav-link" href="{{ route('teacher.classes.assignments.index', ['classRoom' => $classRoom->id]) }}">Tugas</a> 
-                <a class="nav-link" href="{{ route('teacher.classes.orang', ['classRoom'=>$classRoom->id]) }}">Orang</a>
+            <div class="hidden space-x-8 sm:-my-px sm:ml-4 sm:flex">
+                <x-nav-link : href="{{ route('teacher.classes.show', ['classRoom' => $classRoom->id]) }}">Informasi</x-nav-link>
+                <x-nav-link : href="{{ route('teacher.tasks.index', ['classRoom' => $classRoom->id]) }}">Materi</x-nav-link>
+                <x-nav-link : href="{{ route('teacher.classes.assignments.index', ['classRoom' => $classRoom->id]) }}">Tugas</x-nav-link> 
+                <x-nav-link : href="{{ route('teacher.classes.orang', ['classRoom'=>$classRoom->id]) }}">Orang</x-nav-link>
             </div>
         </div>        
         <div class="flex items-center space-x-3">
@@ -23,19 +23,18 @@
 @endsection
 
 @section('content')
-<div class="bg-white p-6 rounded-lg shadow-md">
-    <div class="grid grid-cols-3 lg:grid-cols-3 gap-6"> 
-        <h3 class="text-lg leading-6 font-medium text-gray-900">
-            Siswa Terdaftar ({{ $classRoom->students->count() }})
-        </h3>
-    </div>
-    <div class="px-4 py-5 sm:p-6">
+<div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+    <div class="p-6 text-gray-900">
+        <div class="card-header bg-white border-0 pt-4 pb-0">
+             <h3 class="text-2xl font-bold text-gray-800"> Siswa Terdaftar ({{ $classRoom->students->count() }})</h3>
+        </div>
+    <div class="card-body p-4">
         @if($classRoom->students->count() > 0)
             <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 @foreach($classRoom->students as $student)
-                    <div class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
+                    <div class="flex items-center space-x-3 p-5 bg-gray-50 rounded-lg">
                         <div class="flex-shrink-0">
-                            <div class="h-10 w-10 bg-blue-500 rounded-full flex items-center justify-center">
+                            <div class="h-18 w-18 bg-blue-500 rounded-full flex items-center justify-center">
                                 <span class="text-sm font-medium text-white">
                                     {{ substr($student->user->name, 0, 1) }}
                                 </span>
